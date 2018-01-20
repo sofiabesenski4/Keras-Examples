@@ -1,8 +1,8 @@
 
 #Mushroom Binary Classification: Edible vs Poisonous
 
-#This version is intended to try to find out what is going wrong with the code to make
-#accuracy near 100%
+#This version is intended to try to figure out what is going wrong with the code to make
+#accuracy near 100% by fiddling around and trying to lower the accuracy by adjusting hyperparameters
 
 #Written by Thomas Besenski
 #Jan 15th 2018
@@ -11,30 +11,12 @@ from keras import layers
 import matplotlib.pyplot as plt
 import numpy as np
 
-"""
-
-NOTES:
--Jan 15th: I am not quite sure if the network is working correctly. It 
-is reaching ~100% accuracy on val set with only 2 epochs. I am thinking
-that either:
-	-the net is working correctly and VERY VERY well
-	-the net is interpretting the feature which contains the key
-"""
-
-#data has 22 features, so the initial tensor, before taking out the keys would be of shape (8123, 23)
-
 def interpret_sample_line(sample):
 	for sample_num, sample in enumerate(fp):
 		sample = sample.strip().split(",")
 		for feature_num, feature_value in enumerate(sample):
 				#print ("feature_num: ",feature_num, " ord(feature_val:) ", ord(feature_value))
 				entire_dataset[sample_num, feature_num] = ord(feature_value)
-	#print(entire_dataset)
-"""
-FUNCTION vectorize_features(features vector 22D, entire dataset 3D tensor shape = (8123,22, 12))
-				since we do not want to feed it the keys
-"""
-
 
 def vectorize_features(entire_dataset):
 	#trying to skip the first feature, which is the label/key for the samp
@@ -72,55 +54,27 @@ fp.readline()
 for line in fp:
 	interpret_sample_line(line)
 
-"""the dataset now has the form: 
-sample1:[feature1 ascii val, feature2 ascii val, .., feature23]
-sample2[....]
-sample3[....]
-....
-sample8123[....]
+training_data= vectorize_features(entire_dataset[:5000])
+training_labels = vectorize_labels(entire_dataset[:5000])
 
-and now we have to normalize the data values, using one-hot encoding since the ascii values don't hold any significance asides from
-categorization
-"""
-
-
-training_data= vectorize_features(entire_dataset[:6000])
-
-
-"""
-The x_train now has the shape (8123,22,12) since there are 8123 samples, with 22 features, and 12 possibile vals for each feature
-					in one hot-encoding
-"""
-training_labels = vectorize_labels(entire_dataset[:6000])
-
-
-x_train = training_data[:5000,:,:]
+x_train = training_data[:100,:22,:]
 print("x_train.shape: ",x_train.shape)
-x_test = training_data[5000:,:,:]
-y_train = training_labels[:5000]
+x_test = training_data[100:,:22,:]
+y_train = training_labels[:100]
 print("y_train.shape: ",y_train.shape)
-y_test = training_labels[5000:]
+y_test = training_labels[100:]
 
 
-holdout_val_x = training_data[5000:,:,:]
-holdout_val_y = training_labels[5000:]
+holdout_val_x = training_data[100:,:22,:]
+holdout_val_y = training_labels[100:]
 
-"""
-The labels now have the shape (8123) and contain: 1 for edible, 0 for poisonous for the specific sample
-"""
 # now to build the model
 model = models.Sequential()
-model.add(layers.Dense(24, activation = "relu", input_shape = (22,12)))
+model.add(layers.Dense(32, activation = "relu", input_shape = (22,12)))
 
 model.add(layers.Flatten())
 model.add(layers.Dense(1, activation = "sigmoid"))
 
-
-
 model.compile(optimizer = "rmsprop", loss = "binary_crossentropy", metrics = ['accuracy'])
 
-
-history = model.fit(x_train, y_train, epochs = 5, batch_size = 500, validation_data= (holdout_val_x, holdout_val_y))
-
-#print("the first 4 ascii values in the x_train dataset: ", str(x_train[:4,0,:]))
-	
+history = model.fit(x_train, y_train, epochs = 1, batch_size = 4, validation_data= (holdout_val_x, holdout_val_y))

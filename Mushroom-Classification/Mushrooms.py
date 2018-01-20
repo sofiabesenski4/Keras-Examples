@@ -4,6 +4,7 @@
 #Jan 15th 2018
 from keras import models
 from keras import layers
+from keras import metrics
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -15,6 +16,10 @@ is reaching ~100% accuracy on val set with only 2 epochs. I am thinking
 that either:
 	-the net is working correctly and VERY VERY well
 	-the net is interpretting the feature which contains the key
+
+-after looking at the dataset's discussions, it turns out that many other
+	models are able to achieve 100% accuracy aswell, so I think it is fine!!
+
 """
 
 #data has 22 features, so the initial tensor, before taking out the keys would be of shape (8123, 23)
@@ -106,7 +111,7 @@ The labels now have the shape (8123) and contain: 1 for edible, 0 for poisonous 
 """
 # now to build the model
 model = models.Sequential()
-model.add(layers.Dense(24, activation = "relu", input_shape = (22,12)))
+model.add(layers.Dense(12, activation = "relu", input_shape = (22,12)))
 model.add(layers.Dropout(0.5))
 model.add(layers.Flatten())
 model.add(layers.Dense(1, activation = "sigmoid"))
@@ -116,7 +121,7 @@ model.add(layers.Dense(1, activation = "sigmoid"))
 model.compile(optimizer = "rmsprop", loss = "binary_crossentropy", metrics = ['accuracy'])
 
 
-history = model.fit(x_train, y_train, epochs = 2, batch_size = 1, validation_data= (holdout_val_x, holdout_val_y))
+history = model.fit(x_train, y_train, epochs = 1, batch_size = 32, validation_data= (holdout_val_x, holdout_val_y))
 
 #print("the first 4 ascii values in the x_train dataset: ", str(x_train[:4,0,:]))
 	

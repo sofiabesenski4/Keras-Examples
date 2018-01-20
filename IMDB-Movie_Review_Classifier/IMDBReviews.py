@@ -35,7 +35,7 @@ x_train = vectorize_sequences(train_data)
 x_test = vectorize_sequences(test_data)
 
 ##Vectorizing the labels for automated hypothesis testing
-y_train = np.asarray(train_labels).astype('float32')
+xy_train = np.asarray(train_labels).astype('float32')
 y_test = np.asarray(test_labels).astype('float32')
 
 
@@ -49,7 +49,7 @@ model.add(layers.Dense(1, activation = "sigmoid"))
 
 ##now we must define what Loss function and optimizer to use when adjusting the weight matrix at every update step
 ## also defining what we are trying to maximize in the experimental learning process
-model.compile(optimizer = "rmsprop", loss = "binary_crossentropy", metrics = ['accuracy'])
+model.compile(optimizer = "rmsprop", loss = "binary_crossentropy", metrics = ['binary_accuracy'])
 ##the string "rmsprop" represents a default optimizer stored in the Keras library, but you can also explicitly define your own
 ##optimizers or loss functions using methods within the keras stdlib and pass them in as function objects
 
