@@ -1,8 +1,7 @@
 #Classifying movie Reviews, p. 69 in Deep learning with Python
 from keras.datasets import imdb
+import keras
 import numpy as np
-from keras import models
-from keras import layers
 import matplotlib.pyplot as plt
 
 
@@ -35,7 +34,7 @@ x_train = vectorize_sequences(train_data)
 x_test = vectorize_sequences(test_data)
 
 ##Vectorizing the labels for automated hypothesis testing
-xy_train = np.asarray(train_labels).astype('float32')
+x_train = np.asarray(train_labels).astype('float32')
 y_test = np.asarray(test_labels).astype('float32')
 
 
