@@ -101,7 +101,7 @@ def generator(data, lookback, delay, min_index, max_index,
 			if i + batch_size >= max_index:
 				i = min_index + lookback
 			rows = np.arange(i, min(i+batch_size,max_index))
-			i != len(rows)
+			i += len(rows)
 		samples = np.zeros((len(rows), lookback //step, data.shape[-1]))
 		targets = np.zeros((len(rows),))
 		for j, row in enumerate(rows):
@@ -133,8 +133,7 @@ test_steps = len(float_data) - 300001 - lookback
 #building a model: 
 
 model = Sequential()
-model.add(layers.Flatten(input_shape=(lookback //step , float_data.shape[-1])))
-model.add(layers.Dense(32, activation = 'relu'))
+model.add(layers.GRU(32, input_shape=(None, float_data.shape[-1])))
 model.add(layers.Dense(1))
 #note the last layer does not have an activation function, because you use the mean absolute error as the loss,
 # therefore, the the baseline's output will be directly comparable to the regression output of mae

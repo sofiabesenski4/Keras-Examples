@@ -62,12 +62,10 @@ def generator(data, lookback, delay, min_index, max_index,
 		#print(name)
 		yield samples, targets
 
-
 lookback = 1440
 step = 6
 delay = 144
 batch_size = 128
-
 
 train_gen = generator(float_data, lookback = lookback, delay = delay, min_index = 0, max_index = 200000,shuffle = True,	 batch_size = batch_size,step = step, name = "train")
 val_gen = generator(float_data, lookback = lookback, delay = delay, min_index = 200001, max_index = 300000, batch_size = batch_size,step = step, name = "val")
@@ -76,18 +74,17 @@ test_gen = generator(float_data, lookback = lookback, delay = delay, min_index =
 val_steps = (300000 - 200001)//batch_size
 test_steps = len(float_data) - 300001 - lookback
  
-#building a model: RNN w/ dropout
+#building a model:Stacked RNN w/ dropout
 
 model = Sequential()
-model.add(layers.GRU(16, dropout=0.2, recurrent_dropout=0.2, input_shape=(None  , float_data.shape[-1])))
-
-
+model.add(layers.GRU(16, dropout = 0.2, recurrent_dropout = 0.2, input_shape= (None, float_data.shape[-1]), return_sequences = True))
+model.add(layers.GRU(32, activation='relu'), dropout=0.2, recurrent_dropout=0.2)
 model.add(layers.Dense(1))
 
 model.compile(optimizer = RMSprop(), loss = 'mae')
 history = model.fit_generator(train_gen,
 							steps_per_epoch = 500,
-							epochs=30,
+							epochs=10,
 							validation_data=val_gen,
 							validation_steps = val_steps)
 	
